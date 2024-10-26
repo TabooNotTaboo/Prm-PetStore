@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PetStoreFood</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="product_image">Image of the product</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#FF6200EE</color> <!-- Primary color -->
+    <color name="colorPrimaryDark">#FF3700B3</color> <!-- Darker shade of primary color -->
+    <color name="colorAccent">#FF03DAC5</color> <!-- Accent color -->
+    <color name="colorBackground">#FFFFFF</color> <!-- Background color -->
+    <color name="colorText">#000000</color> <!-- Default text color -->
+    <color name="colorError">#B00020</color> <!-- Error color -->
+    <color name="colorDivider">#E0E0E0</color> <!-- Divider color -->
+</resources>
