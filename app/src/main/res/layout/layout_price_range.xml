@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="#ffffff"
     android:padding="16dp">
 
     <TextView
         android:id="@+id/priceRangeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Price Range: $0 - $100"
+        android:text="Price Range: 0 VND - 0 VND"
         android:textSize="16sp"
         android:textColor="@color/black"
         android:layout_marginBottom="8dp" />
@@ -24,7 +25,7 @@
         android:id="@+id/minPriceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Min Price: $0"
+        android:text="Min Price: 0 VND"
         android:textSize="14sp"
         android:layout_marginTop="8dp" />
 
@@ -32,7 +33,7 @@
         android:id="@+id/maxPriceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Max Price: $100"
+        android:text="Max Price: 0 VND"
         android:textSize="14sp"
         android:layout_marginTop="8dp" />
 

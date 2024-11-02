@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,9 +39,10 @@ public class CategoryFragment extends Fragment {
     List<Category> categories;
     CategoryService categoryService;
     RecyclerView listItem;
+    EditText search;
     CategoryManagementAdapter adapter;
     Button btnAdd;
-
+    String name;
     public CategoryFragment() {
     }
 
@@ -51,6 +54,8 @@ public class CategoryFragment extends Fragment {
         btnAdd = view.findViewById(R.id.addButton);
         listItem = view.findViewById(R.id.categoryRecyclerView);
         categoryService = CategoryRepository.getCategoryService();
+        search = view.findViewById(R.id.searchEditText);
+
         categories = new ArrayList<>();
         adapter = new CategoryManagementAdapter(requireActivity(), categories, this);
         listItem.setAdapter(adapter);
@@ -59,7 +64,23 @@ public class CategoryFragment extends Fragment {
         LayoutInflater inflaterPopup = (LayoutInflater) requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popupLayoutView = inflaterPopup.inflate(R.layout.popup_product, null);
         btnAdd.setOnClickListener(v -> showPopup(popupLayoutView, true, 0));
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                name = search.getText().toString();
+                fetchAllCategories();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         return view;
     }
 
@@ -104,7 +125,7 @@ public class CategoryFragment extends Fragment {
     }
 
     private void fetchAllCategories() {
-        Call<ApiResponse<List<Category>>> call = categoryService.getAllCategories();
+        Call<ApiResponse<List<Category>>> call = categoryService.getAllCategories(name);
         call.enqueue(new Callback<ApiResponse<List<Category>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<Category>>> call, Response<ApiResponse<List<Category>>> response) {

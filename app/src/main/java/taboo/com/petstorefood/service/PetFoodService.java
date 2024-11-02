@@ -13,12 +13,16 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import taboo.com.petstorefood.model.entity.PetFood;
 import taboo.com.petstorefood.model.responseModel.ApiResponse;
 
 public interface PetFoodService {
     @GET("pet-food/v1/pet-foods")
-    Call<ApiResponse<List<PetFood>>> getAllFood();
+    Call<ApiResponse<List<PetFood>>> getAllFood(@Query("filterOptions.Name") String name,
+                                                @Query("filterOptions.PriceRange.PriceFrom") Double minPrice,
+                                                @Query("filterOptions.PriceRange.PriceTo") Double maxPrice,
+                                                @Query("sortOptions") Integer sortOption);
 
     @Multipart
     @POST("pet-food/v1/pet-food")

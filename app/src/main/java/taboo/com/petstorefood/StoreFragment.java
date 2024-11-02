@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,9 +39,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.text.DecimalFormat;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -50,6 +55,7 @@ import taboo.com.petstorefood.adapter.ProductAdapter;
 import taboo.com.petstorefood.model.entity.CartItem;
 import taboo.com.petstorefood.model.entity.Category;
 import taboo.com.petstorefood.model.entity.PetFood;
+import taboo.com.petstorefood.model.entity.enums.SortPetFood;
 import taboo.com.petstorefood.model.requestModel.CartItemRequest;
 import taboo.com.petstorefood.model.responseModel.ApiResponse;
 import taboo.com.petstorefood.model.responseModel.LoginResponse;
@@ -67,9 +73,14 @@ public class StoreFragment extends Fragment {
     PetFoodService petFoodService;
     CategoryService categoryService;
     CartItemService cartItemService;
-
+    EditText search;
     ProductAdapter adapter;
-
+    Button btnPriceChange;
+    String name;
+    Double minPrice = null;
+    Double maxPrice = null;
+    Spinner sortSpinner;
+    Integer sortOption;
     public StoreFragment() {
         // Required empty public constructor
     }
@@ -82,16 +93,68 @@ public class StoreFragment extends Fragment {
         cartItemService = CartItemRepository.getCartService();
         View view = inflater.inflate(R.layout.fragment_store, container, false);
         listItem = view.findViewById(R.id.recycleFood);
+        btnPriceChange = view.findViewById(R.id.priceRangeButton);
+        sortSpinner = view.findViewById(R.id.sortSpinner);
+        search = view.findViewById(R.id.searchBar);
         petFoodList = new ArrayList<>();
         adapter = new ProductAdapter(requireActivity(), petFoodList, this);
         listItem.setAdapter(adapter);
         listItem.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        fetchPetFood();
+        fetchPetFood(null, null, null, null);
+
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                name = search.getText().toString();
+                fetchPetFood(name, minPrice, maxPrice, sortOption);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        btnPriceChange.setOnClickListener(v -> {
+            showPriceRangePopup(v);
+        });
+
+        String[] sortOptions = new String[SortPetFood.values().length];
+        for (int i = 0; i < SortPetFood.values().length; i++) {
+            sortOptions[i] = SortPetFood.values()[i].name();
+        }
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, sortOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Apply the adapter to the spinner
+        sortSpinner.setAdapter(adapter);
+
+        // Set a listener for item selection
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected item
+                SortPetFood selectedSort = SortPetFood.values()[position];
+                // Handle sorting logic based on selectedSort
+                handleSort(selectedSort);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Handle case when nothing is selected if needed
+            }
+        });
         return view;
     }
 
-    private void fetchPetFood() {
-        Call<ApiResponse<List<PetFood>>> call = petFoodService.getAllFood();
+    private void fetchPetFood(String name, Double minPrice, Double maxPrice, Integer sortOption) {
+        Call<ApiResponse<List<PetFood>>> call = petFoodService.getAllFood(name, minPrice, maxPrice, sortOption);
         Log.d("API_CALL", "Calling endpoint: " + call.request().url());
         call.enqueue(new Callback<ApiResponse<List<PetFood>>>() {
             @Override
@@ -163,6 +226,96 @@ public class StoreFragment extends Fragment {
                 Toast.makeText(getContext(), "Please fill in all fields and select an image", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    public void showPriceRangePopup(View anchorView) {
+        View popupView = getLayoutInflater().inflate(R.layout.layout_price_range, null);
+        PopupWindow popupWindow = new PopupWindow(popupView,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.showAtLocation(anchorView, android.view.Gravity.CENTER, 0, 0);
+
+        // Khởi tạo các view trong layout
+        TextView priceRangeTextView = popupView.findViewById(R.id.priceRangeTextView);
+        SeekBar priceSeekBar = popupView.findViewById(R.id.priceSeekBar);
+        TextView minPriceTextView = popupView.findViewById(R.id.minPriceTextView);
+        TextView maxPriceTextView = popupView.findViewById(R.id.maxPriceTextView);
+        Button applyFilterButton = popupView.findViewById(R.id.applyFilterButton);
+
+        // Đặt khoảng giá
+        double minPrice = 0.0;
+        double maxPrice = 10000000.0;
+
+        // Thiết lập giá trị max của SeekBar
+        priceSeekBar.setMax((int) maxPrice);
+
+        // Tạo DecimalFormat để định dạng số
+        DecimalFormat formatter = new DecimalFormat("#,###");
+
+        // Cập nhật giá trị hiển thị cho min và max ban đầu
+        minPriceTextView.setText("Min Price: " + formatter.format(minPrice) + " VND");
+        maxPriceTextView.setText("Max Price: " + formatter.format(maxPrice) + " VND");
+
+        // Lắng nghe sự thay đổi của SeekBar
+        priceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Giá trị khoảng giá dựa vào giá trị của SeekBar
+                double selectedMaxPrice = minPrice + progress;
+
+                // Cập nhật TextView hiển thị khoảng giá với định dạng dấu phẩy
+                priceRangeTextView.setText("Price Range: " + formatter.format(minPrice) + " VND - " + formatter.format(selectedMaxPrice) + " VND");
+                maxPriceTextView.setText("Max Price: " + formatter.format(selectedMaxPrice) + " VND");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // Không cần dùng ở đây
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // Không cần dùng ở đây
+            }
+        });
+
+        // Thiết lập hành động cho nút áp dụng
+        applyFilterButton.setOnClickListener(v -> {
+            double selectedMaxPrice = minPrice + priceSeekBar.getProgress();
+
+            // Gọi API hoặc thực hiện thao tác lọc sản phẩm theo khoảng giá
+            fetchPetFood(name, minPrice, selectedMaxPrice, sortOption);
+            popupWindow.dismiss(); // Đóng popup sau khi áp dụng lọc
+        });
+    }
+    private void handleSort(SortPetFood sortOption) {
+        // Implement sorting logic based on the selected sorting option
+        switch (sortOption) {
+            case PriceAscending:
+                fetchPetFood(name, minPrice, maxPrice, SortPetFood.PriceAscending.getValue());
+                break;
+            case PriceDescending:
+                fetchPetFood(name, minPrice, maxPrice, SortPetFood.PriceDescending.getValue());
+
+                break;
+            case QuantityAscending:
+                fetchPetFood(name, minPrice, maxPrice, SortPetFood.QuantityAscending.getValue());
+
+                break;
+            case QuantityDescending:
+                fetchPetFood(name, minPrice, maxPrice, SortPetFood.QuantityDescending.getValue());
+
+                break;
+            case CreateTimeAscending:
+                fetchPetFood(name, minPrice, maxPrice, SortPetFood.CreateTimeAscending.getValue());
+
+                break;
+            case CreateTimeDescending:
+                fetchPetFood(name, minPrice, maxPrice, SortPetFood.CreateTimeDescending.getValue());
+
+                break;
+        }
     }
 
 }

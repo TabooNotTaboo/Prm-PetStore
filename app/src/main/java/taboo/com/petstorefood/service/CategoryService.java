@@ -10,6 +10,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import taboo.com.petstorefood.model.entity.Category;
 import taboo.com.petstorefood.model.entity.PetFood;
 import taboo.com.petstorefood.model.requestModel.LoginRequest;
@@ -19,7 +20,7 @@ import taboo.com.petstorefood.model.responseModel.PetFoodResponse;
 
 public interface CategoryService {
     @GET("category/v1/categories")
-    Call<ApiResponse<List<Category>>> getAllCategories();
+    Call<ApiResponse<List<Category>>> getAllCategories(@Query("filterOptions.Name") String name);
 
     @POST("category/v1/category")
     Call<ApiResponse<Category>> createCategory(@Body Category request);
