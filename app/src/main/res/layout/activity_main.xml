@@ -22,7 +22,8 @@
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:menu="@menu/bottom_nav_menu"/>
+            app:labelVisibilityMode="labeled"
+            />
     </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -30,5 +31,5 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/drawer_menu"/>
+        />
 </androidx.drawerlayout.widget.DrawerLayout>
