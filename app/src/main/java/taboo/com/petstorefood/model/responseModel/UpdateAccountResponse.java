@@ -1,21 +1,21 @@
 package taboo.com.petstorefood.model.responseModel;
 
-public class RegisterResponse {
-    private String userId;
+public class UpdateAccountResponse {
+    private String id;
     private String userName;
     private String email;
     private String phoneNumber;
     private String fullName;
     private String address;
     private String gender;
-    private String dateOfName;
+    private String dateOfBirth;
 
-    public String getUserId() {
-        return userId;
+    public String getId() {
+        return id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserName() {
@@ -66,11 +66,11 @@ public class RegisterResponse {
         this.gender = gender;
     }
 
-    public String getDateOfName() {
-        return dateOfName;
+    public String getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setDateOfName(String dateOfName) {
-        this.dateOfName = dateOfName;
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 }

@@ -12,6 +12,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import retrofit2.Call;
@@ -65,10 +69,39 @@ public class LoginActivity extends AppCompatActivity {
                     String refreshToken = apiResponse.getData().getRefreshToken();
                     String role = apiResponse.getData().getRole();
                     UUID userId = apiResponse.getData().getUserId();
+                    String userName = apiResponse.getData().getUserName();
+                    String email = apiResponse.getData().getEmail();
+                    String fullName = apiResponse.getData().getFullName();
+                    String phoneNumber = apiResponse.getData().getPhoneNumber();
+                    String address = apiResponse.getData().getAddress();
+                    String gender = apiResponse.getData().getGender();
+                    String dob = apiResponse.getData().getDateOfBirth();
+
+                    String formattedDob = dob;
+                    try {
+                        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                        Date date = inputFormat.parse(dob);
+                        if (date != null) {
+                            formattedDob = outputFormat.format(date); // "2003-03-04"
+                        }
+                    } catch (ParseException e) {
+                        Log.e("DateParsing", "Failed to parse date: " + e.getMessage());
+                    }
+
                     SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
+
                     editor.putString("UserId", userId.toString());
                     editor.putString("Role", role);
+                    editor.putString("Username", userName);
+                    editor.putString("Email", email);
+                    editor.putString("FullName", fullName);
+                    editor.putString("PhoneNumber", phoneNumber);
+                    editor.putString("Address", address);
+                    editor.putString("Gender", gender);
+                    editor.putString("DOB", formattedDob);
+
                     editor.apply();
                     Toast.makeText(LoginActivity.this, "Login success!", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));

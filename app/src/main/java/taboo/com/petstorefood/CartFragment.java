@@ -1,6 +1,8 @@
 package taboo.com.petstorefood;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +56,8 @@ public class CartFragment extends Fragment {
     private Uri imageUri;
     private ActivityResultLauncher<String> imagePickerLauncher;
     TextView txtTotal;
+    Button btnCheckout;
+
     public CartFragment() {
         // Required empty public constructor
     }
@@ -66,6 +71,7 @@ public class CartFragment extends Fragment {
         cartItemService = CartItemRepository.getCartService();
         listItem = view.findViewById(R.id.cartRecyclerView);
         txtTotal = view.findViewById(R.id.totalTextView);
+        btnCheckout =view.findViewById(R.id.checkoutButton);
         petFoodList = new ArrayList<>();
         cartItemList = new ArrayList<>();
         adapter = new CartItemAdapter(requireActivity(), cartItemList, this);
@@ -73,6 +79,13 @@ public class CartFragment extends Fragment {
         listItem.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
         fetchCart();
+
+        btnCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGoogleMapsForAddressCheck();
+            }
+        });
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
@@ -83,6 +96,13 @@ public class CartFragment extends Fragment {
                 });
 
         return view;
+    }
+
+    private void openGoogleMapsForAddressCheck() {
+        btnCheckout.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MapActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void fetchCart() {
