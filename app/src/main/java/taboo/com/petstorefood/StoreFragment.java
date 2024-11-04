@@ -74,6 +74,7 @@ public class StoreFragment extends Fragment {
     CategoryService categoryService;
     CartItemService cartItemService;
     EditText search;
+    TextView txtBannerName;
     ProductAdapter adapter;
     Button btnPriceChange;
     String name;
@@ -93,6 +94,7 @@ public class StoreFragment extends Fragment {
         cartItemService = CartItemRepository.getCartService();
         View view = inflater.inflate(R.layout.fragment_store, container, false);
         listItem = view.findViewById(R.id.recycleFood);
+        txtBannerName = view.findViewById(R.id.bannerName);
         btnPriceChange = view.findViewById(R.id.priceRangeButton);
         sortSpinner = view.findViewById(R.id.sortSpinner);
         search = view.findViewById(R.id.searchBar);
@@ -101,7 +103,9 @@ public class StoreFragment extends Fragment {
         listItem.setAdapter(adapter);
         listItem.setLayoutManager(new LinearLayoutManager(requireActivity()));
         fetchPetFood(null, null, null, null);
-
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("Username", null);
+        txtBannerName.setText(username);
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -150,6 +154,8 @@ public class StoreFragment extends Fragment {
                 // Handle case when nothing is selected if needed
             }
         });
+
+
         return view;
     }
 

@@ -1,6 +1,6 @@
 package taboo.com.petstorefood.repository;
 
-import taboo.com.petstorefood.api.ApiClient;
+import taboo.com.petstorefood.ApiClient;
 import taboo.com.petstorefood.service.AuthenService;
 
 public class AuthenRepository {

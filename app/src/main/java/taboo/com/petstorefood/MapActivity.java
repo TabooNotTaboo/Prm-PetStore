@@ -1,6 +1,7 @@
 package taboo.com.petstorefood;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -68,8 +69,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 LatLng selectedLocation = userMarker.getPosition();
                 double distanceInKm = calculateDistanceInKm(STORE_ADDRESS, selectedLocation);
                 int shippingFee = calculateShippingFee(distanceInKm);
+                String address = getAddressFromLocation(selectedLocation);
+
                 Toast.makeText(this, "Location confirmed. Shipping Fee: " + shippingFee, Toast.LENGTH_SHORT).show();
+                SharedPreferences sharedPreferences = getSharedPreferences("OrderMap", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("ShippingFee", shippingFee);
+                editor.putString("ShippingLocation", address);
+                editor.apply();
+
+                Intent intent = new Intent(MapActivity.this, OrderActivity.class);
+                startActivity(intent);
                 finish();
+
             }
         });
     }
@@ -147,5 +159,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             int additionalDistance = (int) Math.ceil(distanceInKm - 1);
             return BASE_FEE + (additionalDistance * ADDITIONAL_FEE_PER_KM);
         }
+    }
+
+    private String getAddressFromLocation(LatLng latLng) {
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            List<Address> addressList = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            if (addressList != null && !addressList.isEmpty()) {
+                Address address = addressList.get(0);
+                return address.getAddressLine(0); // Lấy địa chỉ dòng đầu tiên
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null; // Trả về null nếu không tìm thấy địa chỉ
     }
 }

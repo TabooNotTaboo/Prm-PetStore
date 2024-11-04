@@ -89,7 +89,7 @@ public class ProductFragment extends Fragment {
     }
 
     private void fetchPetFood() {
-        Call<ApiResponse<List<PetFood>>> call = petFoodService.getAllFood(null, null, null, 0);
+        Call<ApiResponse<List<PetFood>>> call = petFoodService.getAllFood(null, null, null, null);
         Log.d("API_CALL", "Calling endpoint: " + call.request().url());
         call.enqueue(new Callback<ApiResponse<List<PetFood>>>() {
             @Override

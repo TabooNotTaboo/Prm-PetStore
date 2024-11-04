@@ -25,6 +25,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -114,6 +115,8 @@ public class CartFragment extends Fragment {
             @Override
             public void onResponse(Call<ApiResponse<List<CartItem>>> call, Response<ApiResponse<List<CartItem>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    DecimalFormat formatter = new DecimalFormat("#,###");
+
                     int total = 0;
                     // Cập nhật danh sách thực phẩm và thông báo cho adapter
                     cartItemList.clear(); // Xóa danh sách hiện tại
@@ -123,7 +126,7 @@ public class CartFragment extends Fragment {
                          cartItemList) {
                         total += cartItem.getPetFood().getPrice() * cartItem.getQuantity();
                     }
-                    txtTotal.setText("Total: " + total +"VND");
+                    txtTotal.setText("Total: " + formatter.format( total) +"VND");
                 } else {
                     Toast.makeText(getContext(), "Error: " + response.message(), Toast.LENGTH_SHORT).show();
                 }

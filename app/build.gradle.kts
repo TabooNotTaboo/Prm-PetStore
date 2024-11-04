@@ -36,6 +36,14 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.google.android.gms:play-services-maps:18.0.2")
     implementation("com.google.maps:google-maps-services:0.10.0")
+    implementation("com.squareup.okhttp3:okhttp:4.6.0")
+    implementation("commons-codec:commons-codec:1.14")
+    implementation(libs.activity)
+    implementation(fileTree(mapOf(
+        "dir" to "D:\\AndroidLab",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("")
+    )))
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import taboo.com.petstorefood.CartFragment;
@@ -42,10 +43,12 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull CartItemAdapter.ViewHolder holder, int position) {
+        DecimalFormat formatter = new DecimalFormat("#,###");
+
         CartItem cartItem = list.get(position);
         holder.productName.setText(cartItem.getPetFood().getName());
-        holder.productPrice.setText(cartItem.getPetFood().getPrice() + "VND");
-        holder.productQuantity.setText(cartItem.getQuantity() + "");
+        holder.productPrice.setText(formatter.format(cartItem.getPetFood().getPrice()) + "VND");
+        holder.productQuantity.setText(cartItem.getQuantity() + "units");
         holder.img.setImageURI(cartItem.getPetFood().getImage());
         holder.btnUpdate.setOnClickListener(v -> {
             fragment.showPopup(v, false, position);
